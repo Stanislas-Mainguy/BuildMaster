@@ -1,6 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const pool = require('./config/db');
+const cardRoutes = require('./routes/cards');
+const authRoutes = require('./routes/auth');
+const { authenticateToken, checkRole } = require('./middleware/auth');
 
 dotenv.config();
 
@@ -24,6 +27,12 @@ app.get('/db-test', async (_, res) => {
         res.status(500).send('Erreur de serveur');
     }
 });
+
+// Utiliser les routes d'authentification
+app.use('/api/auth', authRoutes);
+
+// Utiliser les routes des cartes avec authentification
+app.use('/api/cards', authenticateToken, cardRoutes);
 
 app.listen(PORT, () => {
     console.log(`Le serveur fonctionne sur le port ${PORT}`);
